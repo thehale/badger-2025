@@ -9,8 +9,8 @@ from badgeware import io, screen, run, brushes, shapes, display
 # animation settings
 animation_duration = 3
 fade_duration = 0.75
-frame_count = 159
-hold_frame = 113
+frame_count = 75
+hold_frame = 50
 
 # render the specified frame from the animation
 current_frame = None
