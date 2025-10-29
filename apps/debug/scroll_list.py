@@ -1,0 +1,118 @@
+from badgeware import PixelFont, screen, brushes, shapes, io
+
+small_font = PixelFont.load("/system/assets/fonts/ark.ppf")
+small_char_width = 7
+large_font = PixelFont.load("/system/assets/fonts/absolute.ppf")
+
+SCREEN_WIDTH = 160
+SCREEN_HEIGHT = 120
+
+CHAR_COUNT_WIDTH = SCREEN_WIDTH // small_char_width
+
+ROW_HEIGHT = 10
+
+
+class ScrollList:
+    def __init__(self, title="", subtitle="", contents=None):
+        self.index = None
+        self.title_text = title
+        self.subtitle_text = subtitle
+        self.content_items = contents or []
+
+        self.padding = 5
+
+        self._current_render_y = 0
+
+    def update(self):
+        self._current_render_y = 0
+        self.handle_io()
+        self.render()
+
+    def handle_io(self):
+        if io.BUTTON_UP in io.pressed:
+            self.on_button_up()
+
+        if io.BUTTON_DOWN in io.pressed:
+            self.on_button_down()
+
+        if io.BUTTON_A in io.pressed:
+            self.on_button_back()
+
+        if io.BUTTON_B in io.pressed:
+            self.on_button_select()
+
+        if io.BUTTON_C in io.pressed:
+            self.on_button_forward()
+
+    def on_button_up(self):
+        if self.index is None:
+            self.index = len(self.content_items) - 1
+        else:
+            self.index = (self.index - 1) % len(self.content_items)
+
+    def on_button_down(self):
+        if self.index == None:
+            self.index = 0
+        else:
+            self.index = (self.index + 1) % len(self.content_items)
+
+    def on_button_back(self):
+        pass
+
+    def on_button_select(self):
+        pass
+
+    def on_button_forward(self):
+        pass
+
+    def render(self):
+        self.render_background()
+        self.render_title()
+        self.render_subtitle()
+        self.render_contents()
+
+    def render_background(self):
+        screen.brush = brushes.color(0, 0, 0)
+        screen.draw(shapes.rectangle(0, 0, 160, 120))
+
+    def render_title(self):
+        if self.title_text:
+            screen.brush = brushes.color(0, 255, 0)
+            screen.font = large_font
+            screen.text(self.title_text, self.padding, self._current_render_y)
+            self._current_render_y += 20
+
+    def render_subtitle(self):
+        if self.subtitle_text:
+            screen.brush = brushes.color(100, 100, 100)
+            screen.font = small_font
+            screen.text(
+                self.subtitle_text[-CHAR_COUNT_WIDTH:],
+                self.padding,
+                self._current_render_y,
+            )
+            self._current_render_y += 10
+
+    def render_contents(self):
+        vspace = SCREEN_HEIGHT - self._current_render_y
+        row_count = vspace // ROW_HEIGHT
+
+        start_row = max(0, (self.index or 0) - (row_count // 2))
+        end_row = start_row + row_count
+
+        items_to_render = self.content_items[start_row:end_row]
+
+        for i, item in enumerate(items_to_render):
+            self.render_item(item, i + start_row)
+
+    def render_item(self, item, index, brush=brushes.color(255, 255, 255)):
+        is_selected = index == self.index
+
+        if is_selected:
+            screen.brush = brushes.color(0, 50, 0)
+            screen.draw(shapes.rectangle(0, self._current_render_y, SCREEN_WIDTH, 12))
+
+        screen.font = small_font
+        screen.brush = brush
+        screen.text(item, self.padding, self._current_render_y)
+        self._current_render_y += 10
