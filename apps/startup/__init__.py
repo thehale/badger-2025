@@ -7,7 +7,7 @@ os.chdir("/system/apps/startup")
 from badgeware import io, screen, run, brushes, shapes, display
 
 # animation settings
-animation_duration = 3
+animation_duration = 0.5 #3
 fade_duration = 0.75
 frame_count = 75
 hold_frame = 50
