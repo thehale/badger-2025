@@ -1,8 +1,8 @@
 import sys
 import os
 
-sys.path.insert(0, "/system/apps/debug")
-os.chdir("/system/apps/debug")
+sys.path.insert(0, "/system/apps/files")
+os.chdir("/system/apps/files")
 
 from file_list import FileList
 from text_file import TextFileViewer
