@@ -7,8 +7,19 @@ class TextFileViewer(ScrollList):
         self.content_items = self.load_file(file_path)
         self.on_close = on_close
 
+        self.pan_idx = 0
+
     def on_button_back(self):
+        self.pan_idx = max(0, self.pan_idx - 1)
+
+    def on_button_forward(self):
+        self.pan_idx = self.pan_idx + 1
+
+    def on_button_select(self):
         self.on_close()
+
+    def render_item(self, item, index):
+        return super().render_item(item[self.pan_idx:], index)
 
     def load_file(self, file_path=None):
         try:

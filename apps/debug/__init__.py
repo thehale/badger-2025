@@ -9,15 +9,19 @@ from text_file import TextFileViewer
 
 stack = []
 
+
+def close_file_viewer():
+    if len(stack) > 1 and isinstance(stack[-1], TextFileViewer):
+        stack.pop()
+
+
+def open_file_viewer(file_path):
+    stack.append(TextFileViewer(file_path, on_close=close_file_viewer))
+
+
 ########################################################################################
 
-stack.append(
-    FileList(
-        open_action=lambda file_path: stack.append(
-            TextFileViewer(file_path, on_close=lambda: stack.pop())
-        )
-    )
-)
+stack.append(FileList(open_action=open_file_viewer))
 
 
 def update():
