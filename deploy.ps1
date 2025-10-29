@@ -1,0 +1,1 @@
+robocopy . D:\ /MIR /XD .git
