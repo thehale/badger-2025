@@ -11,6 +11,8 @@ CHAR_COUNT_WIDTH = SCREEN_WIDTH // small_char_width
 
 ROW_HEIGHT = 10
 
+HOLD_DELAY = 10
+
 
 class ScrollList:
     def __init__(self, title="", subtitle="", contents=None):
@@ -21,6 +23,7 @@ class ScrollList:
 
         self.padding = 5
 
+        self._held_cache = {}
         self._current_render_y = 0
 
     def update(self):
@@ -29,20 +32,24 @@ class ScrollList:
         self.render()
 
     def handle_io(self):
-        if io.BUTTON_UP in io.pressed:
-            self.on_button_up()
-
-        if io.BUTTON_DOWN in io.pressed:
-            self.on_button_down()
-
-        if io.BUTTON_A in io.pressed:
-            self.on_button_back()
+        self.connect_input(io.BUTTON_UP, self.on_button_up)
+        self.connect_input(io.BUTTON_DOWN, self.on_button_down)
+        self.connect_input(io.BUTTON_A, self.on_button_back)
+        self.connect_input(io.BUTTON_C, self.on_button_forward)
 
         if io.BUTTON_B in io.pressed:
-            self.on_button_select()
+             self.on_button_select()
 
-        if io.BUTTON_C in io.pressed:
-            self.on_button_forward()
+    def connect_input(self, button, action):
+        if button in io.pressed:
+            action()
+        if button in io.held:
+            if self._held_cache.get(button, 0) + 1 >= HOLD_DELAY:
+                action()
+            else:
+                self._held_cache[button] = self._held_cache.get(button, 0) + 1
+        else:
+            self._held_cache[button] = 0
 
     def on_button_up(self):
         if self.index is None:
