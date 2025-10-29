@@ -6,6 +6,7 @@ class TextFileViewer(ScrollList):
         super().__init__("", file_path)
         self.content_items = self.load_file(file_path)
         self.on_close = on_close
+        self.wrap_around = False
 
         self.pan_idx = 0
 

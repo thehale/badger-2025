@@ -22,6 +22,7 @@ class ScrollList:
         self.content_items = contents or []
 
         self.padding = 5
+        self.wrap_around = True
 
         self._held_cache = {}
         self._current_render_y = 0
@@ -55,13 +56,19 @@ class ScrollList:
         if self.index is None:
             self.index = len(self.content_items) - 1
         else:
-            self.index = (self.index - 1) % len(self.content_items)
+            if self.wrap_around:
+                self.index = (self.index - 1) % len(self.content_items)
+            else:
+                self.index = max(0, self.index - 1)
 
     def on_button_down(self):
         if self.index == None:
             self.index = 0
         else:
-            self.index = (self.index + 1) % len(self.content_items)
+            if self.wrap_around:
+                self.index = (self.index + 1) % len(self.content_items)
+            else:
+                self.index = min(len(self.content_items) - 1, self.index + 1)
 
     def on_button_back(self):
         pass
